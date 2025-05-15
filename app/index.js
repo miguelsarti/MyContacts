@@ -8,7 +8,10 @@ import {
   FlatList,
   Alert,
   StyleSheet,
+  TouchableOpacity
 } from "react-native";
+
+const CATEGORIES = ["Trabalho", "Pessoal", "Família"]
 
 export default function HomeScreen() {
   const [contacts, setContacts] = useState([]); // Lista de contatos
@@ -79,14 +82,14 @@ export default function HomeScreen() {
         }}
         style={styles.addButton}
       >
-        <Text style={styles.addButtonText}>＋ Novo Contato</Text>
+        <Text style={styles.addButtonText}>+ Novo Contato</Text>
       </Pressable>
 
       {/* Lista de contatos */}
       <FlatList
         data={contacts}
         keyExtractor={(_, i) => String(i)} // Identificador único para cada item
-        renderItem={({ item, index, number, category }) => (
+        renderItem={({ item, index }) => (
           <View style={styles.contactItemContainer}>
             <Text style={styles.contactItem}>{item}</Text>
             <View style={styles.contactButtons}>
@@ -98,7 +101,7 @@ export default function HomeScreen() {
                 <Text style={styles.buttonText}>✏️</Text>
               </Pressable>
               <Pressable
-                onPress={() => confirmDelete(index)} // Exclui a contato
+                onPress={() => confirmDelete(index)} // Exclui o contato
                 style={[styles.contactButton, styles.deleteButton]}
               >
                 <Text style={styles.buttonText}>🗑️</Text>
@@ -107,7 +110,7 @@ export default function HomeScreen() {
           </View>
         )}
         ListEmptyComponent={
-          <Text style={styles.emptyText}>Nenhum contato ainda!</Text>
+          <Text style={styles.emptyText}>Nenhum contato criado!</Text>
         }
       />
 
@@ -128,23 +131,43 @@ export default function HomeScreen() {
             <TextInput
               value={newContact} // O valor do campo de texto é controlado pelo estado `newContact`
               onChangeText={setNewContact} // Atualiza o estado com o novo texto
-              placeholder="Ex: Nome do contato"
+              placeholder="Ex: Nome do Contato"
               style={styles.input}
             />
             <TextInput
               value={newContactNumber} // O valor do campo de texto é controlado pelo estado `newContact`
               onChangeText={setNewContactNumber} // Atualiza o estado com o novo texto
-              placeholder="Ex: Telefone do contato"
+              placeholder="Ex: Telefone"
+              keyboardType="phone-pad"
               style={styles.input}
             />
-            <TextInput
-              value={newContactCategory} // O valor do campo de texto é controlado pelo estado `newContact`
-              onChangeText={setNewContactCategory} // Atualiza o estado com o novo texto
-              placeholder="Ex: Categoria"
-              style={styles.input}
-            />
+
+            <Text style={{ marginBottom: 8 }}>Categoria:</Text>
+            <View style={styles.radioGroup}>
+              {CATEGORIES.map((cat) => (
+                <TouchableOpacity
+                  key={cat}
+                  onPress={() => setNewContactCategory(cat)}
+                  style={[
+                    styles.radioButton,
+                    newContactCategory === cat && styles.radioButtonSelected,
+                  ]}
+                >
+                  <Text
+                    style={[
+                      styles.radioText,
+                      newContactCategory === cat && styles.radioTextSelected,
+                    ]}
+                  >
+                    {cat}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+
+
             <Pressable onPress={addOrEditContact} style={{ marginBottom: 8 }}>
-              <Text style={{ color: "#6200ee", textAlign: "center" }}>
+              <Text style={{ color: "#187C19", textAlign: "center" }}>
                 {editIndex === null ? "Adicionar" : "Salvar alterações"}
               </Text>
             </Pressable>
@@ -174,7 +197,7 @@ const styles = StyleSheet.create({
   },
   addButtonText: {
     color: "#fff",
-    fontSize: 16,
+    fontSize: 14,
   },
   contactItemContainer: {
     flexDirection: "row",
@@ -224,6 +247,28 @@ const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 10,
   },
+  radioGroup: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 16,
+},
+radioButton: {
+    padding: 10,
+    borderWidth: 2,
+    borderColor: "#ccc",
+    borderRadius: 6,
+},
+radioButtonSelected: {
+    backgroundColor: "#8DC71E",
+    borderColor: "#8DC71E",
+},
+radioText: {
+    color: "#333",
+},
+radioTextSelected: {
+    color: "#fff",
+    fontWeight: "bold",
+},
   input: {
     borderWidth: 1,
     borderColor: "#ccc",
